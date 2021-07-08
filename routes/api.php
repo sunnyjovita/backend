@@ -18,3 +18,18 @@ use App\Http\Controllers\ProductController;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+// get product
+Route::get('product', [ProductController::class, 'getProduct']);
+
+// get each product
+Route::get('product/{id}', [ProductController::class, 'getDetail']);
+
+// post product
+Route::post('post/product', [ProductController::class, 'postProduct']);
+
+// update product
+Route::put('update/product/{id}', [ProductController::class, 'updateProduct']);
+
+// delete product
+Route::delete('delete/product/{id}', [ProductController::class, 'deleteProduct']);
