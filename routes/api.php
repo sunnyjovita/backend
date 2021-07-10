@@ -29,7 +29,7 @@ Route::get('product/{id}', [ProductController::class, 'getDetail']);
 Route::post('post/product', [ProductController::class, 'postProduct'])->name('api.postProduct');
 
 // update product
-Route::put('update/product/{id}', [ProductController::class, 'updateProduct']);
+Route::put('update/product/{id}', [ProductController::class, 'updateProduct'])->name('api.updateProduct');
 
 // delete product
-Route::delete('delete/product/{id}', [ProductController::class, 'deleteProduct']);
+Route::delete('delete/product/{id}', [ProductController::class, 'deleteProduct'])->name('api.deleteProduct');

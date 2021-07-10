@@ -49,7 +49,7 @@
         </div>
         <div class="modal-body">
          <span id="form_result"></span>
-         <form method="post" id="sample_form" class="form-horizontal" enctype="multipart/form-data">
+         <form  id="sample_form" class="form-horizontal" enctype="multipart/form-data">
           @csrf
           <!-- <div class="form-group">
             <label class="control-label col-md-4" >First Name : </label>
@@ -105,6 +105,7 @@
                 <label class="col-sm-2 control-label">Image</label>
                      <div class="col-sm-10">
                         <input type="file" id="image" class="form-control" name="image" placeholder="image">
+                        <!-- <div id="preview"><img src="" /></div><br> -->
                         <span id="store_image"></span>
                      </div>
             </div>
@@ -138,7 +139,7 @@
                 <h2 class="modal-title">Confirmation</h2>
             </div>
             <div class="modal-body">
-                <h4 align="center" style="margin:0;">Are you sure you want to remove this data?</h4>
+                <h4 align="center" style="margin:0;">Are you sure you want to remove this product?</h4>
             </div>
             <div class="modal-footer">
              <button type="button" name="ok_button" id="ok_button" class="btn btn-danger">OK</button>
@@ -151,6 +152,8 @@
 <script>
 $(document).ready(function(){
 
+
+
  $('#user_table').DataTable({
   processing: true,
   serverSide: true,
@@ -162,7 +165,7 @@ $(document).ready(function(){
     data: 'image',
     name: 'image',
     render: function(data, type, full, meta){
-     return "<img src={{ URL::to('/') }}/images/" + data + " width='70' class='img-thumbnail' />";
+     return "<img src={{ URL::to('/') }}/storage/" + data + " width='70' class='img-thumbnail' />";
     },
     orderable: false
    },
@@ -187,41 +190,91 @@ $(document).ready(function(){
      $('#action_button').val("Add");
      $('#action').val("Add");
      $('#formModal').modal('show');
+    $('#form_result').html('');
+
  });
 
+
+
  $("#action_button").on('click', function(event){
+
+    
+  let formData = new FormData();
+  let image = $("#image")[0].files[0];
+  formData.append('image', image);
+
+
+  // console.log(image);
+
  
-  let result = $('#sample_form').serialize();
-  console.log(result);
+  let result = $('#sample_form').serializeArray();
+
+
+for(let elm of result){
+    formData.append(elm.name, elm.value);
+}
+
+  // result.forEach(elm=>{
+  //   formData.append(elm.name, elm.value);
+  // })
+
+  // console.log(result);
+
+
+  
+  // console.log(formData);
+  //cara liat formdata
+  for (var pair of formData.entries()) {
+    console.log(pair[0]+ ', ' + pair[1]); 
+    }
+
+
+
 
   if($('#action').val() == 'Add')
 
   {
-    
    $.ajax({
     url:"{{ route('api.postProduct') }}",
     type:"POST",
-    data: result,
+    processData: false,
+    contentType: false,
+    data: formData,
     dataType:"json",
     success: function(data)
-    
     {
-    console.log(data);
-     var html = '';
-     if(data.errors)
+    // console.log(data.status);
+     let html = '';
+     if(data.status == 'error')
      {
+      let l = Object.keys(data.message).length;
+      // console.log(l);
+      let objToarry = Object.keys(data.message);
+      // console.log(objToarry[0]);
       html = '<div class="alert alert-danger">';
-      for(var count = 0; count < data.errors.length; count++)
+      for(var count = 0; count < l; count++)
       {
-       html += '<p>' + data.errors[count] + '</p>';
+        // console.log(objToarry[count]);
+        let a = objToarry[count];
+       html += '<p>' + data.message[a][0] + '</p>';
       }
+      
+      // html += '<p>' + data.message[count] + '</p>';
       html += '</div>';
-     }
-     if(data.success)
-     {
+      // console.log(data);
+      // console.log(data.message);
 
-        
-      html = '<div class="alert alert-success">' + data.success + '</div>';
+      // const obtToarry = Object.keys(data.message);
+      
+
+      // html = `<div class="alert alert-danger">
+      // <p>${data.message}</p>
+      // </div>`;
+     }
+     if(data.status == 'success')
+     {
+  
+      html = '<div class="alert alert-success">' + data.message + '</div>';
       $('#sample_form')[0].reset();
       $('#user_table').DataTable().ajax.reload();
      }

@@ -26,8 +26,8 @@ Route::post('/', [ProductController::class, 'addProduct'])->name('post');
 Route::get('product/{id}', [ProductController::class, 'getDetail']);
 
 // post product 
-Route::get('sell-product', [ProductController::class, 'sellProduct']);
-Route::post('sell-product', [ProductController::class, 'postProduct']);
+// Route::get('sell-product', [ProductController::class, 'sellProduct']);
+// Route::post('sell-product', [ProductController::class, 'postProduct']);
 
 // update product
 Route::put('product/{id}', [ProductController::class, 'updateProduct']);

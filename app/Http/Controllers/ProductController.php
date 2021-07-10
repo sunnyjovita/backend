@@ -63,60 +63,63 @@ class ProductController extends BaseController
 
 
 
-    // post image in jpg or png
-     public function addProduct(Request $req){
-        $rules = array(
-            'title' => ['required', 'string', 'max:75'],
-            'price' => ['required', 'string'],
-            'description' => ['required', 'string'],
-            'image' => 'required|image|max: 2048'
-        );
+    // // post image in jpg or png
+    //  public function addProduct(Request $req){
+    //     $rules = array(
+    //         'title' => ['required', 'string', 'max:75'],
+    //         'price' => ['required', 'string'],
+    //         'description' => ['required', 'string'],
+    //         'image' => 'required|image|max: 2048'
+    //     );
 
 
-        $error = Validator::make($req->all(), $rules);
-        if($error->fails()){
-            return response()->json(['errors'=> $error->errors()->all()]);
-        }
-        else{
+    //     $error = Validator::make($req->all(), $rules);
+    //     if($error->fails()){
+    //         return response()->json(['errors'=> $error->errors()->all()]);
+    //     }
+    //     else{
 
-            if($req->file('image')->isValid()){
+    //         if($req->file('image')->isValid()){
 
-        $image = $req->file('image');
-        $destinationPath = 'public';
-        $name = time().'_'.$image->getClientOriginalName();
-        $path = $image->storeAs($destinationPath, $name);
-        }
+    //     $image = $req->file('image');
+    //     $destinationPath = 'public';
+    //     $name = time().'_'.$image->getClientOriginalName();
+    //     $path = $image->storeAs($destinationPath, $name);
+    //     }
         
-        // $http = new \GuzzleHttp\Client();
-        // // fetch data for api
-        $title = $req->title;
-        $price = $req->price;
-        $description = $req->description;
+    //     // $http = new \GuzzleHttp\Client();
+    //     // // fetch data for api
+    //     $title = $req->title;
+    //     $price = $req->price;
+    //     $description = $req->description;
 
-        // $response = $http->post(env('API_URL').'api/post/product?',[
-        //     'query' => [
-        //         'title' => $title,
-        //         'description' => $description,
-        //         'price' => $price,
-        //         'image' => $path
-        //     ]
+    //     // $response = $http->post(env('API_URL').'api/post/product?',[
+    //     //     'query' => [
+    //     //         'title' => $title,
+    //     //         'description' => $description,
+    //     //         'price' => $price,
+    //     //         'image' => $path
+    //     //     ]
 
-        // ]);
+    //     // ]);
 
-        // $result = json_decode((string)$response->getBody(), true);
+    //     // $result = json_decode((string)$response->getBody(), true);
 
-        return response()->json(['success' => "product has been stored"]);
-        }
-    }
+    //     return response()->json(['success' => "product has been stored"]);
+    //     }
+    // }
 
     // post a product
     public function postProduct(Request $req){
+
+        
         // create validation
         $validator = Validator::make($req->all(),[
             'title'=>['required', 'string', 'max:75'],
             'price'=>['required', 'string'],
             'description'=>['required', 'string'],
             // 'image'=>['required', 'string']
+            'image'=>'required|image|max:2048'
         ]);
 
         if($validator->fails()){
@@ -132,22 +135,43 @@ class ProductController extends BaseController
             // return $this->responseError('Create Product Failed', 422, $validator->errors());
         }
 
+
+        // if($req->file('image')->isValid()){
+
+        $image = $req->file('image');
+        
+        $destinationPath = 'public';
+        $name = time().'_'.$image->getClientOriginalName();
+        // dd($name);
+        $path = $image->storeAs($destinationPath, $name);
+        // }
+        // else{
+            // return 'error';
+        // }
+            // $input = $req->all();
+            // $image = $req->file('image');
+            // dd($image);
+            // $destinationPath = 'public';
+            // $name = time().'_'.$image->getClientOriginalName();
+            // // dd($name);
+            // $path = $image->storeAs($destinationPath, $name);
+        
         // dd($req->title);
 
         $product = new Product;
         $product->title = $req->title;
         $product->price = $req->price;
         $product->description = $req->description;
-        // $product->image = $req->image;
+        $product->image = $name;
 
         $product->save();
         return response()->json([
-            'message'=> 'Product addedd successfully',
+            'message'=> 'Product added successfully',
             "title"=>$product->title,
             'price'=>$product->price,
             'description'=>$product->description,
-            'status'=>"success"
-            // 'image'=>$product->image
+            'status'=>"success",
+            'image'=>$product->image
         ]);
     }
 
