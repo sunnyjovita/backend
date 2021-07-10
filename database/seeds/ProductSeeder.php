@@ -16,8 +16,6 @@ class ProductSeeder extends Seeder
         DB::table('products')->insert([
             [
                 'title'=>'Jual celana murah',
-                'type'=>'celana',
-                'condition'=>'new',
                 'price'=>'150000',
                 'description'=>'size: S, color: white',
                 'image'=>"public/web app project new/images/fashion.jpg"               
@@ -25,8 +23,6 @@ class ProductSeeder extends Seeder
             ],
             [
                 'title'=>'Jual polo shirt',
-                'type'=>"kemeja",
-                'condition'=>'new',
                 'price'=>'300000',
                 'description'=>'size: L, color: black',
                 'image'=>"public/web app project new/images/fashion.jpg"               
@@ -34,8 +30,6 @@ class ProductSeeder extends Seeder
             ],
             [
                 'title'=>'Dress polkadot',
-                'type'=>'baju',
-                'condition'=>'new',
                 'price'=>'200000',
                 'description'=>'size: All Size, color: polkadot',
                 'image'=>"public/web app project new/images/fashion 1.jpg"               

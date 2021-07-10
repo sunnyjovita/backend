@@ -20,13 +20,13 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 // get product
-Route::get('product', [ProductController::class, 'getProduct']);
+Route::get('product', [ProductController::class, 'getProductServerSide'])->name('api.getProduct');
 
 // get each product
 Route::get('product/{id}', [ProductController::class, 'getDetail']);
 
 // post product
-Route::post('post/product', [ProductController::class, 'postProduct']);
+Route::post('post/product', [ProductController::class, 'postProduct'])->name('api.postProduct');
 
 // update product
 Route::put('update/product/{id}', [ProductController::class, 'updateProduct']);
