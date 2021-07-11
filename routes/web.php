@@ -20,22 +20,14 @@ use App\Http\Controllers\ProductController;
 
 // get product
 Route::get('/', [ProductController::class, 'getProduct'])->name('get');
-Route::post('/', [ProductController::class, 'addProduct'])->name('post');
+// Route::post('/', [ProductController::class, 'addProduct'])->name('post');
 
 // get each product
-Route::get('product/{id}', [ProductController::class, 'getDetail']);
-
-// post product 
-// Route::get('sell-product', [ProductController::class, 'sellProduct']);
-// Route::post('sell-product', [ProductController::class, 'postProduct']);
+// Route::get('product/{id}', [ProductController::class, 'getDetail']);
 
 // update product
-Route::post('product/{id}', [ProductController::class, 'updateProduct']);
+// Route::post('product/{id}', [ProductController::class, 'updateProduct']);
 
 // delete product
-Route::delete('product/{id}', [ProductController::class, 'deleteProduct']);
+// Route::delete('product/{id}', [ProductController::class, 'deleteProduct']);
 
-// Route::get('hehe', function(){
-
-// 	return view('hehe');
-// });

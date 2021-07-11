@@ -2,7 +2,7 @@
 <html>
  <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Laravel 5.8 - DataTables Server Side Processing using Ajax</title>
+  <title>Laravel 5.6 - CRUD Operations using Laravel Ajax</title>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
@@ -17,9 +17,15 @@
      <br />
      <h3 align="center">Laravel 5.6 Ajax Crud</h3>
      <br />
+     <div align="left">
+      <h6>Sunny Jovita</h6>
+      <h6> Laravel versi 5.6 </h6>
+      <h6> PHP versi 7.1.3 </h6>
+     </div>
      <div align="right">
       <button type="button" name="create_record" id="create_record" class="btn btn-success btn-sm">Create Record</button>
      </div>
+     
      <br />
    <div class="table-responsive">
     <table class="table table-bordered table-striped" id="user_table">
@@ -31,7 +37,6 @@
                 <th width="30%">Action</th>
             </tr>
            </thead>
-
        </table>
    </div>
    <br />
@@ -51,12 +56,7 @@
          <span id="form_result"></span>
          <form  id="sample_form" class="form-horizontal" enctype="multipart/form-data">
           @csrf
-          <!-- <div class="form-group">
-            <label class="control-label col-md-4" >First Name : </label>
-            <div class="col-md-8">
-             <input type="text" name="first_name" id="first_name" class="form-control" />
-            </div>
-           </div> -->
+          
            <div class="form-group">
                 <label class="col-sm-2 control-label">Title</label>
                     <div class="col-sm-10">
@@ -109,14 +109,6 @@
                         <span id="store_image"></span>
                      </div>
             </div>
-
-           <!-- <div class="form-group">
-            <label class="control-label col-md-4">Select Profile Image : </label>
-            <div class="col-md-8">
-             <input type="file" name="image" id="image" />
-             <span id="store_image"></span>
-            </div>
-           </div> -->
 
            <br />
            <div class="form-group" align="center">
@@ -194,14 +186,6 @@ $(document).ready(function(){
 
  });
 
-// 1. user klik button edit 
-// 2. data-id, data-id yang mau di edit sama user
-// 3. siapkan api untuk get data by -> select * from tbl where id = id yang user klik
-// 4. seetelah dapat datan, kita tampilakn form edit
-// 5. muncul modals
-// 6. user edit->akan klik tombol update
-// 7. dataa yg baru akan dikirm ke api update, 
-
 
  $("#action_button").on('click', function(event){
 
@@ -230,13 +214,10 @@ for(let elm of result){
 
   
   // console.log(formData);
-  //cara liat formdata
+  //to see formdata
   for (var pair of formData.entries()) {
     console.log(pair[0]+ ', ' + pair[1]); 
     }
-
-
-
 
   if($('#action').val() == 'Add')
 
@@ -266,17 +247,10 @@ for(let elm of result){
        html += '<p>' + data.message[a][0] + '</p>';
       }
       
-      // html += '<p>' + data.message[count] + '</p>';
       html += '</div>';
       // console.log(data);
       // console.log(data.message);
 
-      // const obtToarry = Object.keys(data.message);
-      
-
-      // html = `<div class="alert alert-danger">
-      // <p>${data.message}</p>
-      // </div>`;
      }
      if(data.status == 'success')
      {
@@ -367,10 +341,7 @@ else{
     $('#title').val(d.title);
     $('#price').val(d.price);
     $('#description').val(d.description);
-    // $('#editImage').val(d.image);
-    // $("#editImage").attr("src", d.image);
     $('#editImage').attr("src","{{ URL::to('/') }}/storage/" + d.image);
-    // $('#store_image').append("<input type='hidden' name='hidden_image' value='"+d.data.image+"' />");
     $('#hidden_id').val(d.id);
     $('.modal-title').text("Edit New Record");
     $('#action_button').val("Edit");
@@ -389,10 +360,6 @@ $(document).on('click', '.delete', function(){
 
 $('#ok_button').click(function(){
 
-    // let hid_id = $(this).data('id');
-  // console.log(hid_id);
-    // $('#form_result').html('');
-
     var url = '{{ route("api.deleteProduct", ":id") }}';
     url = url.replace(':id', user_id )
 
@@ -407,22 +374,20 @@ $('#ok_button').click(function(){
     if(data.status == "success"){
 
      html = '<div class="alert alert-success">' + data.message + '</div>';
-      // $('#sample_form')[0].reset();
-      // $('#store_image').html('');
 
       $('#deleteMess').html(html);
       $('#user_table').DataTable().ajax.reload();
-       // $('#confirmModal')[0].reset();
-       // $('#confirmModal').ajax('reload');
-
+     
     }
     setTimeout(function(){
     
      $('#confirmModal').modal('hide');
      $('#user_table').DataTable().ajax.reload();
+
     }, 1500);
-    
+      
    }
+
   })
  });
 
