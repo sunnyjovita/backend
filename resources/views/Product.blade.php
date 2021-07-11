@@ -105,7 +105,7 @@
                 <label class="col-sm-2 control-label">Image</label>
                      <div class="col-sm-10">
                         <input type="file" id="image" class="form-control" name="image" placeholder="image">
-                        <!-- <div id="preview"><img src="" /></div><br> -->
+                        <div id="preview"><img id="editImage" src="" /></div><br>
                         <span id="store_image"></span>
                      </div>
             </div>
@@ -131,7 +131,7 @@
     </div>
 </div>
 
-<!-- <div id="confirmModal" class="modal fade" role="dialog">
+<div id="confirmModal" class="modal fade" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -139,7 +139,7 @@
                 <h2 class="modal-title">Confirmation</h2>
             </div>
             <div class="modal-body">
-                <h4 align="center" style="margin:0;">Are you sure you want to remove this product?</h4>
+                <h4 id="deleteMess" align="center" style="margin:0;">Are you sure you want to remove this product?</h4>
             </div>
             <div class="modal-footer">
              <button type="button" name="ok_button" id="ok_button" class="btn btn-danger">OK</button>
@@ -147,7 +147,7 @@
             </div>
         </div>
     </div>
-</div> -->
+</div>
 
 <script>
 $(document).ready(function(){
@@ -194,6 +194,13 @@ $(document).ready(function(){
 
  });
 
+// 1. user klik button edit 
+// 2. data-id, data-id yang mau di edit sama user
+// 3. siapkan api untuk get data by -> select * from tbl where id = id yang user klik
+// 4. seetelah dapat datan, kita tampilakn form edit
+// 5. muncul modals
+// 6. user edit->akan klik tombol update
+// 7. dataa yg baru akan dikirm ke api update, 
 
 
  $("#action_button").on('click', function(event){
@@ -283,83 +290,141 @@ for(let elm of result){
    })
   }
 
-  // if($('#action').val() == "Edit")
-  // {
-  //  $.ajax({
-  //   url:"{{ route('post') }}",
-  //   method:"POST",
-  //   data:new FormData(this),
-  //   contentType: false,
-  //   cache: false,
-  //   processData: false,
-  //   dataType:"json",
-  //   success:function(data)
-  //   {
-  //    var html = '';
-  //    if(data.errors)
-  //    {
-  //     html = '<div class="alert alert-danger">';
-  //     for(var count = 0; count < data.errors.length; count++)
-  //     {
-  //      html += '<p>' + data.errors[count] + '</p>';
-  //     }
-  //     html += '</div>';
-  //    }
-  //    if(data.success)
-  //    {
-  //     html = '<div class="alert alert-success">' + data.success + '</div>';
-  //     $('#sample_form')[0].reset();
-  //     $('#store_image').html('');
-  //     $('#user_table').DataTable().ajax.reload();
-  //    }
-  //    $('#form_result').html(html);
-  //   }
-  //  });
-  // }
+  if($('#action').val() == "Edit")
+  {
+
+    // console.log(formData);
+
+
+   $.ajax({
+    url:"{{ route('api.updateProduct') }}",
+    type:"POST",
+    data:formData,
+    contentType: false,
+    cache: false,
+    processData: false,
+    dataType:"json",
+    success:function(data)
+    {
+     let html = '';
+     if(data.status == 'error')
+     {
+
+if(data.message == "Image is not an image"){
+    
+    html = '<div class="alert alert-danger">';
+     
+    html += '<p>' + data.message + '</p>';
+      
+}
+else{
+
+
+        let l = Object.keys(data.message).length;
+      
+      let objToarry = Object.keys(data.message);
+      
+      html = '<div class="alert alert-danger">';
+      for(var count = 0; count < l; count++)
+      {
+      
+        let a = objToarry[count];
+       html += '<p>' + data.message[a][0] + '</p>';
+      }
+      
+     
+      html += '</div>';
+
+     }
+ }
+     if(data.status == 'success')
+     {
+      html = '<div class="alert alert-success">' + data.message + '</div>';
+      $('#sample_form')[0].reset();
+      // $('#store_image').html('');
+      $('#user_table').DataTable().ajax.reload();
+     }
+     $('#form_result').html(html);
+    }
+   });
+  }
  });
 
- // $(document).on('click', '.edit', function(){
- //  var id = $(this).attr('id');
- //  $('#form_result').html('');
- //  $.ajax({
- //   url:"/ajax-crud/"+id+"/edit",
- //   dataType:"json",
- //   success:function(html){
- //    $('#first_name').val(html.data.first_name);
- //    $('#last_name').val(html.data.last_name);
- //    $('#store_image').html("<img src={{ URL::to('/') }}/images/" + html.data.image + " width='70' class='img-thumbnail' />");
- //    $('#store_image').append("<input type='hidden' name='hidden_image' value='"+html.data.image+"' />");
- //    $('#hidden_id').val(html.data.id);
- //    $('.modal-title').text("Edit New Record");
- //    $('#action_button').val("Edit");
- //    $('#action').val("Edit");
- //    $('#formModal').modal('show');
- //   }
- //  })
- // });
+ $(document).on('click', '.edit', function(){
+  let hid_id = $(this).data('id');
+  // console.log(hid_id);
+  $('#form_result').html('');
 
- // var user_id;
+    var url = '{{ route("api.getById", ":id") }}';
+    url = url.replace(':id', hid_id )
 
- // $(document).on('click', '.delete', function(){
- //  user_id = $(this).attr('id');
- //  $('#confirmModal').modal('show');
- // });
+  $.ajax({
+   url:url,
+   dataType:"json", // get data in json format in server side
+   success:function(d)
+   { // will be called if it's success
+    console.log(d);
+    $('#title').val(d.title);
+    $('#price').val(d.price);
+    $('#description').val(d.description);
+    // $('#editImage').val(d.image);
+    // $("#editImage").attr("src", d.image);
+    $('#editImage').attr("src","{{ URL::to('/') }}/storage/" + d.image);
+    // $('#store_image').append("<input type='hidden' name='hidden_image' value='"+d.data.image+"' />");
+    $('#hidden_id').val(d.id);
+    $('.modal-title').text("Edit New Record");
+    $('#action_button').val("Edit");
+    $('#action').val("Edit");
+    $('#formModal').modal('show');
+   }
+  })
+ });
 
- // $('#ok_button').click(function(){
- //  $.ajax({
- //   url:"ajax-crud/destroy/"+user_id,
- //   beforeSend:function(){
- //    $('#ok_button').text('Deleting...');
- //   },
- //   success:function(data)
- //   {
- //    setTimeout(function(){
- //     $('#confirmModal').modal('hide');
- //     $('#user_table').DataTable().ajax.reload();
- //    }, 2000);
- //   }
- //  })
- // });
+ var user_id;
+
+$(document).on('click', '.delete', function(){
+  user_id = $(this).data('id');
+  $('#confirmModal').modal('show');
+ });
+
+$('#ok_button').click(function(){
+
+    // let hid_id = $(this).data('id');
+  // console.log(hid_id);
+    // $('#form_result').html('');
+
+    var url = '{{ route("api.deleteProduct", ":id") }}';
+    url = url.replace(':id', user_id )
+
+  $.ajax({
+   url:url,
+   type: "DELETE",
+   beforeSend:function(){
+    $('#ok_button').text('Deleting...');
+   },
+   success:function(data)
+   {
+    if(data.status == "success"){
+
+     html = '<div class="alert alert-success">' + data.message + '</div>';
+      // $('#sample_form')[0].reset();
+      // $('#store_image').html('');
+
+      $('#deleteMess').html(html);
+      $('#user_table').DataTable().ajax.reload();
+       // $('#confirmModal')[0].reset();
+       // $('#confirmModal').ajax('reload');
+
+    }
+    setTimeout(function(){
+    
+     $('#confirmModal').modal('hide');
+     $('#user_table').DataTable().ajax.reload();
+    }, 1500);
+    
+   }
+  })
+ });
 
 });
 </script>

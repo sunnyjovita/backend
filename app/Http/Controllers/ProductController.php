@@ -26,9 +26,10 @@ class ProductController extends BaseController
                 ->addIndexColumn()
                 ->addColumn('action', function($row){
        
-                $btn = ' <button class="btn btn-info open-modal" value="'.$row->id.'">Edit
+                $btn = ' <button class="btn btn-info open-modal edit" data-id="'.$row->id.'" >Edit
                             </button>';
-                $btn = $btn. ' <button class="btn btn-danger delete-link" value="'.$row->id.'">Delete
+                // dd($btn);
+                $btn .= ' <button class="btn btn-danger delete-link delete" data-id="'.$row->id.'" >Delete
                             </button>';
          
                     return $btn;
@@ -52,14 +53,14 @@ class ProductController extends BaseController
 
         // ]);
 
-        return view('hehe', ['products'=>session('products')]);
+        return view('Product', ['products'=>session('products')]);
     }
 
-    // get each product
-    public function getDetail($id){
-        $productDetail = Product::find($id);
-        return response()->json($productDetail);
-    }
+    // // get each product
+    // public function getDetail($id){
+    //     $productDetail = Product::find($id);
+    //     return response()->json($productDetail);
+    // }
 
 
 
@@ -158,6 +159,8 @@ class ProductController extends BaseController
         
         // dd($req->title);
 
+     
+
         $product = new Product;
         $product->title = $req->title;
         $product->price = $req->price;
@@ -179,47 +182,99 @@ class ProductController extends BaseController
         $product = Product::find($id);
         $result = $product->delete();
         if($result){
-            return $this->responseOk('Product has been deleted');
+            return response()->json([
+            'message' => 'Product deleted successfully',
+                // 'id' => $product->id,
+                // 'title' => $product->title,
+                // 'price' => $product->price,
+                // 'description' => $product->description,
+                'status'=> 'success',
+                // 'image' => $product->image
+
+            ]);
+            // return $this->responseOk('Product has been deleted');
         }
-        else{
-             return $this->responseError('Delete Product Failed', 422);
+        
+    }
+
+
+    public function updateProductServerSide($id){
+        if(request()->ajax()){
+            $asdnaskjdn = Product::find($id);
+            return response()->json($asdnaskjdn);
         }
     }
 
-    public function updateProduct(Request $req, $id){
+    public function updateProduct(Request $req){
+
         $validator = Validator::make($req->all(),[
             'title'=>['required', 'string', 'max:75'],
             'price'=>['required', 'string'],
             'description'=>['required', 'string'],
-            'image'=>['required', 'string']
+            
         ]);
 
         if($validator->fails()){
-            return $this->responseError('Update product failed', 422, $validator->errors());
+            return response()->json([
+            'message'=> $validator->errors(),
+            // "title"=>$product->title,
+            // 'price'=>$product->price,
+            // 'description'=>$product->description,
+            'status'=>"error"
+            // 'image'=>$product->image
+        ]);
+            // return $this->responseError('Update product failed', 422, $validator->errors());
         }
 
-        $product = Product::find($req->id);
+
+        $image = $req->file('image');
+
+
+        
+        // dd($cekExt);
+        
+
+        if($image != null){
+
+        $cekExt = $image->getClientOriginalExtension();
+        // dd($cekExt);
+        // dd($cekExt);
+
+
+        if($cekExt != "png" && $cekExt != "jpg" && $cekExt != "jpeg" && $cekExt != "svg" ){
+            return response()->json([
+            'message'=> "Image is not an image",
+            'status'=>"error"
+        ]);    
+        }
+
+            $destinationPath = 'public';
+            $name = time().'_'.$image->getClientOriginalName();
+        // dd($name);
+            $path = $image->storeAs($destinationPath, $name);
+        }
+        
+        
+
+        $product = Product::find($req->hidden_id);
         $product->title = $req->title;
         $product->price = $req->price;
         $product->description = $req->description;
-        $product->image = $req->image;
+        if($image != null){
+        $product->image = $name;
+        }
 
-        $result = $product->save();
-        if($result){
-            $response = [
+
+        $product->save();
+        return response()->json([
                 'message' => 'Product updated successfully',
                 'id' => $product->id,
                 'title' => $product->title,
                 'price' => $product->price,
                 'description' => $product->description,
+                'status'=> 'success',
                 'image' => $product->image
-            ];
-
-            return $this->responseOk($response);
-        }
-        else{
-            return $this->responseError('Update product failed');
-        }
+            ]);
 
     }
 }
